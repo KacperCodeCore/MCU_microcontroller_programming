@@ -237,17 +237,6 @@ int main(void)
 
 
 
-	  const char message[] = "Set alarms time!\r\n";
-	  HAL_UART_Transmit(&huart2, (uint8_t*)message, strlen(message), HAL_MAX_DELAY);
-
-	  	  	  // zerowanie czasu
-	  		   RTC_TimeTypeDef new_time = {0};
-	  		   new_time.Hours = 0;
-	  		   new_time.Minutes = 0;
-	  		   new_time.Seconds = 40;
-	  		   HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BIN);
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -261,101 +250,6 @@ int main(void)
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 		  last_ms = HAL_GetTick();
 	  }
-//	  if (is_button_pressed()) {
-//		  while(1){}
-//	  }
-
-
-	  // ustalanie godziny i minut alarmu
-	  if (is_user_button_pressed(0)) {
-		  if(user_button_pressed == false){
-			  user_button_pressed = true;
-		  	led_set_1(2, true);
-		  	hours ++;
-		  	if (hours >= 24){
-			  	hours = 0;
-		  	}
-		  	printf("Czas alarmu: %02d:%02d\n", hours, minutes);
-		  }
-	  }
-	  else if (is_user_button_pressed(1)) {
-		  if(user_button_pressed == false){
-			  user_button_pressed = true;
-			  led_set_1(1, true);
-			  minutes++;
-			  if (minutes >= 60){
-	 		 	minutes = 0;
-			  }
-			  printf("Czas alarmu: %02d:%02d\n", hours, minutes);
-		  }
-	  }
-	  else if (is_button_pressed()) {
-		  if(user_button_pressed == false){
-			  user_button_pressed = true;
-			  printf("\n");
-			  led_set_1(2, true);
-
-			  if (alarm_number > 5){
-				  alarm_number = 1;
-			  }
-			  alarms_time[0][alarm_number] = hours;
-			  alarms_time[1][alarm_number] = minutes;
-
-			  print_alarms();
-			  alarm_number++;
-		  }
-	  }
-	  else{
-		  user_button_pressed = false;
-		  led_set_1(1, false);
-		  led_set_1(2, false);
-	  }
-
-
-
-
-
-
-	  // aktualny czas + wyswietlanie
-	  RTC_TimeTypeDef time;
-	  RTC_DateTypeDef date;
-	  //wyświetlanie czasu
-	   HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
-	   HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-//	   if(current_secound != time.Seconds){
-//		   current_secound = time.Seconds;
-//		   printf("Aktualny czas: %02d:%02d:%02d\n", time.Hours, time.Minutes, time.Seconds);
-//	   }
-
-
-
-	   if(current_minute != time.Minutes){
-		   current_minute = time.Minutes;
-		   print_alarms();
-		   //porównanie alarmu z czasem
-//		   printf("-> checking alarms \n");
-//		   printf("-> alarms_time[0][i] Hours: %d - %d \n", alarms_time[0][i],time.Hours);
-//		   printf("-> alarms_time[1][i] Minutes: %d - %d \n", alarms_time[1][i],time.Minutes);
-		   int i;
-		   for (i = 0; i < 5; i++) {
-
-			  if(alarms_time[0][i] == time.Hours && alarms_time[1][i] == time.Minutes){
-				  printf("\n");
-
-				  if(alarms_time[2][i] == 1)
-				  {
-					  led_set_1(3, true);
-					  printf("-> Alarm: %d, dioda: on\n", i+1);
-				  }
-				  else{
-					  led_set_1(3, false);
-					  printf("!!! Alarm: %d, dioda: off\n", i+1);
-				  }
-			  }
-		   }
-		   printf("\n");
-	   }
-
 
 
 
@@ -371,48 +265,24 @@ int main(void)
 
 	  if(enter_pressed){
 		  enter_pressed = false;
-//	      printf("\r dioda LED ");
-//	      if(led_states[received_number]){
-//	    	  printf("off ");
-//	      }else{
-//	    	  printf("on ");
-//	      }
-//	      printf("%d\n",received_number);
+
+	      printf("\r dioda LED ");
 		  received_number = received_number - 1;
-
-	      if(alarms_time[2][received_number] == 0){
-	    	  alarms_time[2][received_number] = 1;
-	      }else{
-	    	  alarms_time[2][received_number] = 0;
-	      }
-
-	      print_alarms();
-
 	      led_states[received_number] = !led_states[received_number];
 	      led_set_1(received_number, led_states[received_number]);
+
+	      if(led_states[received_number] == false){
+	    	  printf("off ");
+	      }else{
+	    	  printf("on ");
+	      }
+	      printf("%d\n",received_number +1);
+
+
+
+
 	  }
 
-
-//	  // jeśli naciśnięto przycisk
-//	   if (is_button_pressed()) {
-//		   number++;
-//		   led_set_1(number, true);
-//
-////		   // ważne: nieużywane pola muszą być wyzerowane
-////		   RTC_TimeTypeDef new_time = {0};
-////		   // czekamy na zwolnienie przycisku
-////		   while (is_button_pressed()) {}
-////		   // ustawiamy godzinę 07:45:00
-////		   new_time.Hours = 7;
-////		   new_time.Minutes = 45;
-////		   new_time.Seconds = 0;
-////		   HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BIN);
-//	   }else{
-//		   led_set_1(number, false);
-//		   if(number >= 5){
-//			   number = 0;
-//		   }
-//	   }
 
 
     /* USER CODE END WHILE */
