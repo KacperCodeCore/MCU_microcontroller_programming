@@ -244,7 +244,7 @@ int main(void)
 	  		   RTC_TimeTypeDef new_time = {0};
 	  		   new_time.Hours = 0;
 	  		   new_time.Minutes = 0;
-	  		   new_time.Seconds = 30;
+	  		   new_time.Seconds = 40;
 	  		   HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BIN);
 
 
