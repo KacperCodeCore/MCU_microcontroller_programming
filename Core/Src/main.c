@@ -79,29 +79,29 @@ int number = 0;
 int current_minute = 0;
 int current_secound = 0;
 
-void led_set_1(int led, bool turn_on)
-{
- GPIO_PinState state = (turn_on) ? GPIO_PIN_SET : GPIO_PIN_RESET;
- switch (led) {
- case 1:
- HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, state);
- break;
- case 2:
- HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, state);
- break;
- case 3:
- HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, state);
- break;
- case 4:
- HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, state);
- break;
- case 5:
- HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, state);
- break;
- default:
- break;
- }
-}
+//void led_set_1(int led, bool turn_on)
+//{
+// GPIO_PinState state = (turn_on) ? GPIO_PIN_SET : GPIO_PIN_RESET;
+// switch (led) {
+// case 1:
+// HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, state);
+// break;
+// case 2:
+// HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, state);
+// break;
+// case 3:
+// HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, state);
+// break;
+// case 4:
+// HAL_GPIO_WritePin(LED4_GPIO_Port, LED4_Pin, state);
+// break;
+// case 5:
+// HAL_GPIO_WritePin(LED5_GPIO_Port, LED5_Pin, state);
+// break;
+// default:
+// break;
+// }
+//}
 
 int __io_putchar(int ch)
 {
@@ -113,25 +113,25 @@ int __io_putchar(int ch)
  return 1;
 }
 
-bool is_user_button_pressed(int button) {
-  switch (button) {
-  case 0:
-    if (HAL_GPIO_ReadPin(USER_BUTTON3_GPIO_Port, USER_BUTTON3_Pin) == GPIO_PIN_RESET) {
-      return true;
-    } else {
-      return false;
-    }
-  case 1:
-    if (HAL_GPIO_ReadPin(USER_BUTTON2_GPIO_Port, USER_BUTTON2_Pin) == GPIO_PIN_RESET) {
-      return true;
-    } else {
-      return false;
-    }
-
-  default:
-    return false;
-  }
-}
+//bool is_user_button_pressed(int button) {
+//  switch (button) {
+//  case 0:
+//    if (HAL_GPIO_ReadPin(USER_BUTTON3_GPIO_Port, USER_BUTTON3_Pin) == GPIO_PIN_RESET) {
+//      return true;
+//    } else {
+//      return false;
+//    }
+//  case 1:
+//    if (HAL_GPIO_ReadPin(USER_BUTTON2_GPIO_Port, USER_BUTTON2_Pin) == GPIO_PIN_RESET) {
+//      return true;
+//    } else {
+//      return false;
+//    }
+//
+//  default:
+//    return false;
+//  }
+//}
 
 bool is_button_pressed(void) {
  if (HAL_GPIO_ReadPin(USER_BUTTON_GPIO_Port, USER_BUTTON_Pin) == GPIO_PIN_RESET) {
@@ -394,28 +394,28 @@ int main(void)
 	      line_append(value);
 	  }
 
-	  if(enter_pressed){
-		  enter_pressed = false;
-//	      printf("\r dioda LED ");
-//	      if(led_states[received_number]){
-//	    	  printf("off ");
+//	  if(enter_pressed){
+//		  enter_pressed = false;
+////	      printf("\r dioda LED ");
+////	      if(led_states[received_number]){
+////	    	  printf("off ");
+////	      }else{
+////	    	  printf("on ");
+////	      }
+////	      printf("%d\n",received_number);
+//		  received_number = received_number - 1;
+//
+//	      if(alarms_time[2][received_number] == 0){
+//	    	  alarms_time[2][received_number] = 1;
 //	      }else{
-//	    	  printf("on ");
+//	    	  alarms_time[2][received_number] = 0;
 //	      }
-//	      printf("%d\n",received_number);
-		  received_number = received_number - 1;
-
-	      if(alarms_time[2][received_number] == 0){
-	    	  alarms_time[2][received_number] = 1;
-	      }else{
-	    	  alarms_time[2][received_number] = 0;
-	      }
-
-	      print_alarms();
-
-	      led_states[received_number] = !led_states[received_number];
-	      led_set_1(received_number, led_states[received_number]);
-	  }
+//
+//	      print_alarms();
+//
+//	      led_states[received_number] = !led_states[received_number];
+//	      led_set_1(received_number, led_states[received_number]);
+//	  }
 
 
 //	  // jeśli naciśnięto przycisk
@@ -606,16 +606,9 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, LED3_Pin|LED4_Pin|LED5_Pin|LED2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : USER_BUTTON_Pin */
   GPIO_InitStruct.Pin = USER_BUTTON_Pin;
@@ -629,26 +622,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : LED3_Pin LED4_Pin LED5_Pin LED2_Pin */
-  GPIO_InitStruct.Pin = LED3_Pin|LED4_Pin|LED5_Pin|LED2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : USER_BUTTON2_Pin USER_BUTTON3_Pin */
-  GPIO_InitStruct.Pin = USER_BUTTON2_Pin|USER_BUTTON3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LED1_Pin */
-  GPIO_InitStruct.Pin = LED1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 10, 0);
