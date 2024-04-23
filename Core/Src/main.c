@@ -72,6 +72,7 @@ bool led_states[] = { false, false, false, false, false, false};
 bool pressed = false;
 bool enter_pressed = false;
 bool user_button_pressed = false;
+bool lD2_state = true;
 int alarms_time[3][5];
 int alarm_number = 0;
 int number = 0;
@@ -188,6 +189,18 @@ void print_alarms(){
 
 
 
+
+
+volatile uint32_t push_counter;
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == USER_BUTTON_Pin) {
+    push_counter++;
+  }
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -252,8 +265,19 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint32_t old_push_counter = push_counter; //9
   while (1)
   {
+	  // przerwanie
+	  if (old_push_counter != push_counter) {
+	        old_push_counter = push_counter;
+	        printf("counter = %lu\n", old_push_counter);
+	        lD2_state = !lD2_state;
+	      }
+	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, lD2_state);
+
+
 	  //Watchdog
 	  HAL_IWDG_Refresh(&hiwdg);
 	  uint32_t now = HAL_GetTick();
@@ -266,95 +290,95 @@ int main(void)
 //	  }
 
 
-	  // ustalanie godziny i minut alarmu
-	  if (is_user_button_pressed(0)) {
-		  if(user_button_pressed == false){
-			  user_button_pressed = true;
-		  	led_set_1(2, true);
-		  	hours ++;
-		  	if (hours >= 24){
-			  	hours = 0;
-		  	}
-		  	printf("Czas alarmu: %02d:%02d\n", hours, minutes);
-		  }
-	  }
-	  else if (is_user_button_pressed(1)) {
-		  if(user_button_pressed == false){
-			  user_button_pressed = true;
-			  led_set_1(1, true);
-			  minutes++;
-			  if (minutes >= 60){
-	 		 	minutes = 0;
-			  }
-			  printf("Czas alarmu: %02d:%02d\n", hours, minutes);
-		  }
-	  }
-	  else if (is_button_pressed()) {
-		  if(user_button_pressed == false){
-			  user_button_pressed = true;
-			  printf("\n");
-			  led_set_1(2, true);
-
-			  if (alarm_number > 5){
-				  alarm_number = 1;
-			  }
-			  alarms_time[0][alarm_number] = hours;
-			  alarms_time[1][alarm_number] = minutes;
-
-			  print_alarms();
-			  alarm_number++;
-		  }
-	  }
-	  else{
-		  user_button_pressed = false;
-		  led_set_1(1, false);
-		  led_set_1(2, false);
-	  }
-
-
+//	  // ustalanie godziny i minut alarmu
+//	  if (is_user_button_pressed(0)) {
+//		  if(user_button_pressed == false){
+//			  user_button_pressed = true;
+//		  	led_set_1(2, true);
+//		  	hours ++;
+//		  	if (hours >= 24){
+//			  	hours = 0;
+//		  	}
+//		  	printf("Czas alarmu: %02d:%02d\n", hours, minutes);
+//		  }
+//	  }
+//	  else if (is_user_button_pressed(1)) {
+//		  if(user_button_pressed == false){
+//			  user_button_pressed = true;
+//			  led_set_1(1, true);
+//			  minutes++;
+//			  if (minutes >= 60){
+//	 		 	minutes = 0;
+//			  }
+//			  printf("Czas alarmu: %02d:%02d\n", hours, minutes);
+//		  }
+//	  }
+//	  else if (is_button_pressed()) {
+//		  if(user_button_pressed == false){
+//			  user_button_pressed = true;
+//			  printf("\n");
+//			  led_set_1(2, true);
+//
+//			  if (alarm_number > 5){
+//				  alarm_number = 1;
+//			  }
+//			  alarms_time[0][alarm_number] = hours;
+//			  alarms_time[1][alarm_number] = minutes;
+//
+//			  print_alarms();
+//			  alarm_number++;
+//		  }
+//	  }
+//	  else{
+//		  user_button_pressed = false;
+//		  led_set_1(1, false);
+//		  led_set_1(2, false);
+//	  }
 
 
 
 
-	  // aktualny czas + wyswietlanie
-	  RTC_TimeTypeDef time;
-	  RTC_DateTypeDef date;
-	  //wyświetlanie czasu
-	   HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
-	   HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
-//	   if(current_secound != time.Seconds){
-//		   current_secound = time.Seconds;
-//		   printf("Aktualny czas: %02d:%02d:%02d\n", time.Hours, time.Minutes, time.Seconds);
+
+
+//	  // aktualny czas + wyswietlanie
+//	  RTC_TimeTypeDef time;
+//	  RTC_DateTypeDef date;
+//	  //wyświetlanie czasu
+//	   HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
+//	   HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
+////	   if(current_secound != time.Seconds){
+////		   current_secound = time.Seconds;
+////		   printf("Aktualny czas: %02d:%02d:%02d\n", time.Hours, time.Minutes, time.Seconds);
+////	   }
+
+
+//	   // sprawdzanie co minutę
+//	   if(current_minute != time.Minutes){
+//		   current_minute = time.Minutes;
+//		   print_alarms();
+//		   //porównanie alarmu z czasem
+////		   printf("-> checking alarms \n");
+////		   printf("-> alarms_time[0][i] Hours: %d - %d \n", alarms_time[0][i],time.Hours);
+////		   printf("-> alarms_time[1][i] Minutes: %d - %d \n", alarms_time[1][i],time.Minutes);
+//		   int i;
+//		   for (i = 0; i < 5; i++) {
+//
+//			  if(alarms_time[0][i] == time.Hours && alarms_time[1][i] == time.Minutes){
+//				  printf("\n");
+//
+//				  if(alarms_time[2][i] == 1)
+//				  {
+//					  led_set_1(3, true);
+//					  printf("-> Alarm: %d, dioda: on\n", i+1);
+//				  }
+//				  else{
+//					  led_set_1(3, false);
+//					  printf("!!! Alarm: %d, dioda: off\n", i+1);
+//				  }
+//			  }
+//		   }
+//		   printf("\n");
 //	   }
-
-
-
-	   if(current_minute != time.Minutes){
-		   current_minute = time.Minutes;
-		   print_alarms();
-		   //porównanie alarmu z czasem
-//		   printf("-> checking alarms \n");
-//		   printf("-> alarms_time[0][i] Hours: %d - %d \n", alarms_time[0][i],time.Hours);
-//		   printf("-> alarms_time[1][i] Minutes: %d - %d \n", alarms_time[1][i],time.Minutes);
-		   int i;
-		   for (i = 0; i < 5; i++) {
-
-			  if(alarms_time[0][i] == time.Hours && alarms_time[1][i] == time.Minutes){
-				  printf("\n");
-
-				  if(alarms_time[2][i] == 1)
-				  {
-					  led_set_1(3, true);
-					  printf("-> Alarm: %d, dioda: on\n", i+1);
-				  }
-				  else{
-					  led_set_1(3, false);
-					  printf("!!! Alarm: %d, dioda: off\n", i+1);
-				  }
-			  }
-		   }
-		   printf("\n");
-	   }
 
 
 
@@ -594,7 +618,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : USER_BUTTON_Pin */
   GPIO_InitStruct.Pin = USER_BUTTON_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(USER_BUTTON_GPIO_Port, &GPIO_InitStruct);
 
@@ -624,6 +648,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 10, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
