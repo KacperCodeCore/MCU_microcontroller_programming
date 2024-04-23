@@ -197,6 +197,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   if (GPIO_Pin == USER_BUTTON_Pin) {
     push_counter++;
+    lD2_state = !lD2_state;
   }
 }
 
@@ -273,7 +274,7 @@ int main(void)
 	  if (old_push_counter != push_counter) {
 	        old_push_counter = push_counter;
 	        printf("counter = %lu\n", old_push_counter);
-	        lD2_state = !lD2_state;
+
 	      }
 	  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, lD2_state);
 
